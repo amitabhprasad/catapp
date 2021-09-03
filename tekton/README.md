@@ -10,6 +10,7 @@ Kubernetes-style resources for declaring CI/CD-style pipelines.
 ```bash
 oc new-project tekton-pipelines
 oc adm policy add-scc-to-user anyuid -z tekton-pipelines-controller
+
 oc apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.notags.yaml
 ```
 
@@ -104,10 +105,26 @@ Get the URL for your route with `oc get route catapp`, and open the route URL in
 If you would like to view the PipelineRun logs, then read [these instructions](https://github.com/tektoncd/pipeline/blob/master/docs/logs.md) from the Tekton Pipelines
 documentation.
 
+## Deploy triggers 
+- To deploy trigger and related crd's
+```
+kubectl apply --filename https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+kubectl apply --filename https://storage.googleapis.com/tekton-releases/triggers/lates
+```
+- Make sure you run the following, when using Openshift
+```
+oc adm policy add-scc-to-user anyuid -z tekton-triggers-controller -n tekton-pipelines
+oc adm policy add-scc-to-user anyuid -z tekton-triggers-core-interceptors -n tekton-pipelines
+oc adm policy add-scc-to-user anyuid -z tekton-triggers-webhook -n tekton-pipelines
+
+oc adm policy add-scc-to-user anyuid -z pipeline -n catapp
+oc adm policy add-scc-to-user anyuid -z catapp -n catapp
+
+```
 ## Run the Trigger
 
 ```bash
-URL="https://github.com/ncskier/catapp" # The URL of your fork of CatApp
+URL="https://github.com/amitabhprasad/catapp" # The URL of your fork of CatApp
 ROUTE_HOST=$(oc get route el-catapp --template='http://{{.spec.host}}')
 curl -v \
    -H 'X-GitHub-Event: pull_request' \

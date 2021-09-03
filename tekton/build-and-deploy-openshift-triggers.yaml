@@ -61,6 +61,7 @@ spec:
 ---
 apiVersion: v1
 kind: ServiceAccount
+namespace: catapp
 metadata:
   name: catapp
 ---
@@ -71,8 +72,8 @@ metadata:
 rules:
 # Permissions for every EventListener deployment to function
 - apiGroups: ["triggers.tekton.dev"]
-  resources: ["eventlisteners", "triggerbindings", "triggertemplates"]
-  verbs: ["get"]
+  resources: ["eventlisteners", "triggerbindings", "triggertemplates","clustertriggerbindings","clusterinterceptors","triggers"]
+  verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["get", "list", "watch"]
@@ -93,6 +94,29 @@ roleRef:
   kind: Role
   name: catapp
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crb-catapp
+subjects:
+- kind: ServiceAccount
+  name: catapp
+  namespace: catapp
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cr-catapp
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cr-catapp
+rules:
+# Permissions for every EventListener deployment to function
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["eventlisteners", "triggerbindings","clustertriggerbindings","clusterinterceptors","triggers"]
+  verbs: ["get", "list", "watch"]
+---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
@@ -100,11 +124,11 @@ metadata:
 spec:
   serviceAccountName: catapp
   triggers:
-  - name: pullrequest-build-and-deploy
-    template:
-      name: catapp-build-and-deploy
-    bindings:
-    - name: catapp-build-and-deploy
+    - name: pullrequest-build-and-deploy
+      template:
+        name: catapp-build-and-deploy
+      bindings:
+        - name: catapp-build-and-deploy
 ---
 apiVersion: route.openshift.io/v1
 kind: Route

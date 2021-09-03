@@ -1,4 +1,4 @@
-apiVersion: triggers.tekton.dev/v1alpha1
+apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: catapp-build-and-deploy
@@ -14,35 +14,36 @@ spec:
     description: Name of the Deployment and the container name in the Deployment.
   - name: SERVICE_ACCOUNT
     description: The ServiceAccount under which to run the Pipeline.
+  
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
       generateName: catapp-build-and-deploy-
     spec:
-      serviceAccountName: $(params.SERVICE_ACCOUNT)
+      serviceAccountName: $(tt.params.SERVICE_ACCOUNT)
       pipelineRef:
         name: build-and-deploy-openshift
       resources:
-      - name: source
-        resourceSpec:
-          type: git
-          params:
-          - name: revision
-            value: $(params.REVISION)
-          - name: url
-            value: $(params.URL)
-      - name: image
-        resourceSpec:
-          type: image
-          params:
-          - name: url
-            value: image-registry.openshift-image-registry.svc:5000/$(params.NAMESPACE)/catapp:$(params.REVISION)
+        - name: source
+          resourceSpec:
+            type: git
+            params:
+              - name: revision
+                value: $(tt.params.REVISION)
+              - name: url
+                value: $(tt.params.URL)
+        - name: image
+          resourceSpec:
+            type: image
+            params:
+            - name: url
+              value: image-registry.openshift-image-registry.svc:5000/$(tt.params.NAMESPACE)/catapp:$(tt.params.REVISION)
       params:
-      - name: DEPLOYMENT
-        value: $(params.DEPLOYMENT)
+        - name: DEPLOYMENT
+          value: $(tt.params.DEPLOYMENT)
 ---
-apiVersion: triggers.tekton.dev/v1alpha1
+apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: catapp-build-and-deploy
@@ -117,18 +118,24 @@ rules:
   resources: ["eventlisteners", "triggerbindings","clustertriggerbindings","clusterinterceptors","triggers"]
   verbs: ["get", "list", "watch"]
 ---
-apiVersion: triggers.tekton.dev/v1alpha1
+apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: catapp
 spec:
   serviceAccountName: catapp
+  #triggers:
+  #  - name: pullrequest-build-and-deploy
+  #    template:
+  #      name: catapp-build-and-deploy
+  #    bindings:
+  #      - name: catapp-build-and-deploy
   triggers:
     - name: pullrequest-build-and-deploy
-      template:
-        name: catapp-build-and-deploy
       bindings:
-        - name: catapp-build-and-deploy
+        - ref: catapp-build-and-deploy
+      template:
+        ref: catapp-build-and-deploy
 ---
 apiVersion: route.openshift.io/v1
 kind: Route

@@ -7,4 +7,4 @@ kind: Kustomization
 images:
 - name: index.docker.io/amitabhprasad/catapp:latest
   newName: index.docker.io/amitabhprasad/catapp
-  newTag: 241663cf9f18b8a9e85224bc10f6a35946a52ea4
+  newTag: c0478c6c2fb627d163cb171860c0349ca03dc15a

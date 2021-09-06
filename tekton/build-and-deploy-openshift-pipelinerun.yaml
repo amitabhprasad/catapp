@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-   name: catapp-build-and-deploy
+   name: catapp-build-and-deploy-docker
 spec:
    serviceAccountName: pipeline
    pipelineRef:
@@ -20,7 +20,8 @@ spec:
         type: image
         params:
           - name: url
-            value: image-registry.openshift-image-registry.svc:5000/catapp/catapp:master
+            #value: image-registry.openshift-image-registry.svc:5000/catapp/catapp:master
+            value: index.docker.io/amitabhprasad/catapp
    params:
     - name: DEPLOYMENT
       value: "catapp"

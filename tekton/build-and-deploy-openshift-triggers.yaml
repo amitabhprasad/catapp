@@ -38,7 +38,8 @@ spec:
             type: image
             params:
             - name: url
-              value: image-registry.openshift-image-registry.svc:5000/$(tt.params.NAMESPACE)/catapp:$(tt.params.REVISION)
+              # value: image-registry.openshift-image-registry.svc:5000/$(tt.params.NAMESPACE)/catapp:$(tt.params.REVISION)
+              value: index.docker.io/amitabhprasad/catapp:$(tt.params.REVISION)
       params:
         - name: DEPLOYMENT
           value: $(tt.params.DEPLOYMENT)

@@ -17,7 +17,7 @@ spec:
       containers:
         - name: catapp
           # This image will be overwritten by the update-deployment Task
-          image: catapp:latest
+          image: index.docker.io/amitabhprasad/catapp:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

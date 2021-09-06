@@ -2,3 +2,9 @@ resources:
 - deployment.yaml
 - service.yaml
 - route.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: index.docker.io/amitabhprasad/catapp:latest
+  newName: index.docker.io/amitabhprasad/catapp
+  newTag: c0478c6c2fb627d163cb171860c0349ca03dc15a

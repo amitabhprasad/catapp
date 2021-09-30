@@ -1,0 +1,16 @@
+curl --location --request POST 'https://argocd-route-argocd.amitabh-spp-snapshot-fae6c235d7a3aed6346697c0e75f4896-0000.us-south.containers.appdomain.cloud/api/v1/clusters' \
+--header 'Authorization: Bearer <token>' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "config": {
+        "tlsClientConfig": {
+            "caData": "<b64_ca_cert>",
+            "insecure": false,
+            "certData": "<b64_client_cert>",
+            "keyData": "<b64_client_key"
+        }
+    },
+    "name": "aobrzut-crossplane-final",
+    "server": "https://c100-e.eu-de.containers.cloud.ibm.com:31543",
+    "serverVersion": "4.7.23"
+}'

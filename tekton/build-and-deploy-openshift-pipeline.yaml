@@ -76,6 +76,7 @@ spec:
     - name: DEPLOYMENT
       description: Name of the Deployment and the container name in the Deployment
       type: string
+    - name: NAMESPACE
   resources:
     inputs:
       - name: source
@@ -89,7 +90,7 @@ spec:
       command: ['/bin/bash', '-c']
       args:
       - |-
-        oc apply -f $(inputs.params.K8S_DIRECTORY_PATH)
+        oc apply -k $(inputs.params.K8S_DIRECTORY_PATH) -n $(inputs.params.NAMESPACE)
     - name: patch-deployment
       image: quay.io/openshift/origin-cli:latest
       command: ['/bin/bash', '-c']
@@ -121,6 +122,17 @@ spec:
       description: Path to the directory for kubectl apply -f
       type: string
       default: config/
+    - name: URL
+      description: GIT repo url
+      type: string
+    - name: REVISION
+      description: image tag id mapped to git revision
+      type: string
+    - name: NAMESPACE
+      description: namespace to deploy app
+      type: string
+  workspaces:
+    - name: workspace
   tasks:
     - name: build
       taskRef:
@@ -150,3 +162,28 @@ spec:
           value: "$(params.K8S_DIRECTORY_PATH)"
         - name: DEPLOYMENT
           value: "$(params.DEPLOYMENT)"
+        - name: NAMESPACE
+          value: "$(params.NAMESPACE)"
+    - name: update
+      runAfter: [deploy]
+      taskRef:
+        name: git-update-deployment
+        kind: Task
+      params:
+        - name: GIT_REPOSITORY
+          value: "$(params.URL)"
+        - name: GIT_USERNAME
+          value: "amitabhprasad"
+        - name: GIT_PASSWORD
+          value: "0d59e5bb4bbd05c53a30a122f2b30bd2cd0f5428"
+        - name: CURRENT_IMAGE
+          value: "index.docker.io/amitabhprasad/catapp:latest"
+        - name: NEW_IMAGE
+          value: "index.docker.io/amitabhprasad/catapp"
+        - name: GIT_COMMIT_ID
+          value: "$(params.REVISION)"
+        - name: KUSTOMIZATION_PATH
+          value: "config"
+      workspaces:
+        - name: workspace
+          workspace: workspace

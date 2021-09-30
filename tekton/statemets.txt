@@ -1,0 +1,9 @@
+Goal:
+    Deploy Application
+        - create catalog source
+        
+        - create subscription
+       
+       -  Create CR 
+            - Create Route
+            - ...

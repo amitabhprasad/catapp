@@ -43,6 +43,21 @@ spec:
       params:
         - name: DEPLOYMENT
           value: $(tt.params.DEPLOYMENT)
+        - name: URL
+          value: $(tt.params.URL)
+        - name: REVISION
+          value: $(tt.params.REVISION)
+        - name: NAMESPACE
+          value: $(tt.params.NAMESPACE)
+      workspaces:
+      - name: workspace
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 100Mi
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
